@@ -117,8 +117,74 @@ export default function WeatherDashboard() {
           </div>
         </div>
 
-        
+        {/* Details Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Wind */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Wind</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">
+              {weatherData.wind.speed.toFixed(1)} m/s
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <svg 
+                className="w-5 h-5" 
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                style={{ transform: `rotate(${weatherData.wind.deg}deg)` }}
+              >
+                <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+              </svg>
+              <span>{getWindDirection(weatherData.wind.deg)} ({weatherData.wind.deg}°)</span>
+            </div>
+          </div>
 
+          {/* Humidity */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Humidity</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">
+              {weatherData.main.humidity}%
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${weatherData.main.humidity}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Visibility */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Visibility</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">
+              {(weatherData.visibility / 1000).toFixed(1)} km
+            </div>
+            <div className="text-gray-600 text-sm">
+              {weatherData.visibility / 1000 >= 10 ? 'Excellent' : 
+               weatherData.visibility / 1000 >= 5 ? 'Good' : 'Moderate'}
+            </div>
+          </div>
+
+          
+        </div>
+
+        
+        
       </div>
     </div>
   );

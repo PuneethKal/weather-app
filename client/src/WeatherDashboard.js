@@ -180,7 +180,76 @@ export default function WeatherDashboard() {
             </div>
           </div>
 
-          
+          {/* Pressure */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Pressure</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">
+              {weatherData.main.pressure} hPa
+            </div>
+            <div className="text-sm text-gray-600">
+              Sea: {weatherData.main.sea_level} hPa
+              <br />
+              Ground: {weatherData.main.grnd_level} hPa
+            </div>
+          </div>
+
+          {/* Clouds */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Cloud Cover</h3>
+            </div>
+            <div className="text-3xl font-bold text-gray-800 mb-2">
+              {weatherData.clouds.all}%
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+              <div 
+                className="bg-gray-600 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${weatherData.clouds.all}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Sun Times */}
+          <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">Sun Times</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <span className="text-gray-700">Sunrise</span>
+                </div>
+                <span className="font-semibold text-gray-800">
+                  {formatTime(weatherData.sys.sunrise)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <span className="text-gray-700">Sunset</span>
+                </div>
+                <span className="font-semibold text-gray-800">
+                  {formatTime(weatherData.sys.sunset)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         

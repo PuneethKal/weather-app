@@ -251,8 +251,12 @@ export default function WeatherDashboard() {
             </div>
           </div>
         </div>
-
         
+        {/* USES CURRENT DATE BUT DOESNT UDPATE DATA, TO BE DONE! */}
+        {/* Footer Info */} 
+        <div className="mt-6 text-center text-black/80 text-sm">
+          Last updated: {new Date(weatherData.dt * 1000).toLocaleString()}
+        </div>
         
       </div>
     </div>

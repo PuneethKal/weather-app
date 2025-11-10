@@ -35,9 +35,9 @@ export default function WeatherDashboard() {
   const kelvinToCelsius = (k) => (k - 273.15).toFixed(1);
   const kelvinToFahrenheit = (k) => ((k - 273.15) * 9/5 + 32).toFixed(1);
   
-  const [tempUnit, setTempUnit] = useState('C');
+  const [tempUnit, setTempUnit] = useState('F');
   
-  const getTemp = (k) => tempUnit === 'C' ? kelvinToCelsius(k) : kelvinToFahrenheit(k);
+  const getTemp = (k) => tempUnit === 'F' ? kelvinToCelsius(k) : kelvinToFahrenheit(k);
   
   const formatTime = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -49,18 +49,18 @@ export default function WeatherDashboard() {
     return directions[Math.round(deg / 22.5) % 16];
   };
 
-  const getWeatherGradient = (condition) => {
-    const gradients = {
-      'Clouds': 'from-gray-400 via-gray-500 to-gray-600',
-      'Clear': 'from-blue-400 via-blue-500 to-blue-600',
-      'Rain': 'from-gray-600 via-gray-700 to-gray-800',
-      'Snow': 'from-blue-200 via-blue-300 to-blue-400',
-    };
-    return gradients[condition] || 'from-gray-400 via-gray-500 to-gray-600';
-  };
+  // const getWeatherGradient = (condition) => {
+  //   const gradients = {
+  //     'Clouds': 'from-gray-400 via-gray-500 to-gray-600',
+  //     'Clear': 'from-blue-400 via-blue-500 to-blue-600',
+  //     'Rain': 'from-gray-600 via-gray-700 to-gray-800',
+  //     'Snow': 'from-blue-200 via-blue-300 to-blue-400',
+  //   };
+  //   return gradients[condition] || 'from-gray-400 via-gray-500 to-gray-600';
+  // };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${getWeatherGradient(weatherData.weather[0].main)} p-4 sm:p-8`}>
+    <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8`}>
       <div className="max-w-6xl mx-auto">
         {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 mb-6">

@@ -1,36 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios'
 
 export default function WeatherDashboard() {
-  const [weatherData] = useState({ // temp weather data
-    "coord": { "lon": -79.0329, "lat": 43.8501 },
-    "weather": [{ "id": 803, "main": "Clouds", "description": "broken clouds", "icon": "04d" }],
-    "base": "stations",
-    "main": {
-      "temp": 279,
-      "feels_like": 275.06,
-      "temp_min": 278.21,
-      "temp_max": 280.77,
-      "pressure": 1013,
-      "humidity": 78,
-      "sea_level": 1013,
-      "grnd_level": 996
-    },
-    "visibility": 10000,
-    "wind": { "speed": 6.17, "deg": 330 },
-    "clouds": { "all": 75 },
-    "dt": 1763054331,
-    "sys": {
-      "type": 2,
-      "id": 2009624,
-      "country": "CA",
-      "sunrise": 1763035710,
-      "sunset": 1763070756
-    },
-    "timezone": -18000,
-    "id": 5882873,
-    "name": "Ajax",
-    "cod": 200
-  });
+
+  const [weatherData,setWeatherData] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getweatherData() {
+      try {
+        // console.log("Calling Weather API");
+        const { data } = await axios.get('http://localhost:5000/api/weather');
+        setWeatherData(data);
+      } catch (err) {
+        console.error("Error fetching weather:", err);
+      }finally{
+        setLoading(false)
+      }
+    }
+    getweatherData();
+  }, []);
 
   const kelvinToCelsius = (k) => (k - 273.15).toFixed(1);
   const kelvinToFahrenheit = (k) => ((k - 273.15) * 9/5 + 32).toFixed(1);
@@ -58,6 +47,9 @@ export default function WeatherDashboard() {
   //   };
   //   return gradients[condition] || 'from-gray-400 via-gray-500 to-gray-600';
   // };
+
+  //TODO: Make animated loading screen
+  if (loading) return <div>Loading</div>
 
   return (
     <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8`}>

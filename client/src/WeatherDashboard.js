@@ -250,20 +250,32 @@ export default function WeatherDashboard() {
         </div>
 
         {/* Forecast */}
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-2 gap-4 mt-4 sm:grid-cols-2">
           {forecastData['list'].slice(0, 5).map((f, index) => (
             <div key={f.dt} className='bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow'>
               <h3 className='text-grey-800 font-semibold text-lg mb-3'>{new Date(weatherData.dt * 1000).toDateString() + " - " + formatTime(weatherData.dt)}</h3>
-              <div className='flex flex-row gap-2 items-center'>
-                <img
-                  src={`https://openweathermap.org/img/wn/${f.weather[0].icon}@2x.png`}
-                  alt="weather icon"
-                />
-                <div className='flex flex-col'>
-                  <div className='text-grey-800 font-semibold text-3xl'>{getTemp(f.main.temp)}°</div>
-                  <div className="text-lgtext-gray-800 mb-2 capitalize"> {f.weather[0].description}</div>
+              <div className='flex flex-row justify-between w-full items-center'>
+                <div className='flex flex-row gap-2 items-center'>
+                  <img
+                    src={`https://openweathermap.org/img/wn/${f.weather[0].icon}@2x.png`}
+                    alt="weather icon"
+                  />
+                  <div className='flex flex-col'>
+                    <div className='text-grey-800 font-semibold text-3xl'>{getTemp(f.main.temp)}°</div>
+                    <div className="text-lgtext-gray-800 mb-2 capitalize"> {f.weather[0].description}</div>
+                  </div>
                 </div>
-
+                <div className="flex flex-col gap-2 text-right">
+                  <div className="text-gray-700">
+                    <span className="text-sm">Feels like</span>
+                    <span className="text-2xl font-semibold ml-2">
+                      {getTemp(weatherData.main.feels_like)}°
+                    </span>
+                  </div>
+                  <div className="text-gray-600 text-sm">
+                    H: {getTemp(weatherData.main.temp_max)}° L: {getTemp(weatherData.main.temp_min)}°
+                  </div>
+                </div>
               </div>
 
             </div>

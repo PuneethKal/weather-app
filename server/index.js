@@ -22,9 +22,12 @@ app.get("/api/weather", async (req, res) => {
         return
     }
 
+
+    const lat = req.query.lat || '43.651070';
+    const lon = req.query.lon || '-79.347015';
+
     console.log("Calling Weather API ...");
-    const city = req.body.city || TorontoLOC;
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&appid=${process.env.OpenWeatherMapAPI}`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
     const { data } = await axios.get(url);
     res.json(data);
 });
@@ -38,9 +41,11 @@ app.get("/api/forecast", async (req, res) => {
         return
     }
 
+    const lat = req.query.lat || '43.651070';
+    const lon = req.query.lon || '-79.347015';
+
     console.log("Calling Weather API ...");
-    const city = req.body.city || TorontoLOC;
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${city.lat}&lon=${city.lon}&appid=${process.env.OpenWeatherMapAPI}`;
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
     const { data } = await axios.get(url);
     res.json(data);
 });

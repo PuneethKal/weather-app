@@ -4,14 +4,17 @@ import axios from 'axios'
 export default function WeatherDashboard() {
 
   const [weatherData,setWeatherData] = useState("");
+  const [forecastData,setForecastData] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getweatherData() {
       try {
         // console.log("Calling Weather API");
-        const { data } = await axios.get('http://localhost:5000/api/weather');
-        setWeatherData(data);
+        const wdata = await axios.get('http://localhost:5000/api/weather');
+        setWeatherData(wdata.data);
+        const fdata = await axios.get('http://localhost:5000/api/forecast');
+        setForecastData(fdata.data);
       } catch (err) {
         console.error("Error fetching weather:", err);
       }finally{
@@ -242,6 +245,12 @@ export default function WeatherDashboard() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Forecast */}
+        <div className="">
+
+
         </div>
         
         {/* USES CURRENT DATE BUT DOESNT UDPATE DATA, TO BE DONE! */}

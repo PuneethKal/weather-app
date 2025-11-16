@@ -13,6 +13,27 @@ app.use(express.json()) // Enables reading body of req
 
 const TorontoLOC = {lat:'43.651070', lon:'-79.347015'}
 
+function formatForecastData(forecasts){
+    let cols = []
+    let rows = []
+    rows.push(forecasts[0])
+    forecasts.forEach((forecast,index) => {
+        if (forecast.dt_txt.substring(0,10) == rows[0].dt_txt.substring(0,10)){
+            rows.push(forecast)
+        }else{
+            cols.push([...rows])
+            rows = [forecast]
+        }
+
+        if (index === forecasts.length - 1) {
+            cols.push([...rows]);
+        }
+
+    });
+    
+    return cols
+}
+
 // Current weather API
 app.get("/api/weather", async (req, res) => {
 
@@ -37,6 +58,7 @@ app.get("/api/forecast", async (req, res) => {
 
     if(true){  // TODO: Intended to full from DB when time difference between API req is small
         console.log("Pulling Forecast Data From DB ...");
+        console.log(formatForecastData(fdata.list));
         res.json(fdata)
         return
     }

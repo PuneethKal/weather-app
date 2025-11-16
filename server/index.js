@@ -16,18 +16,31 @@ const TorontoLOC = {lat:'43.651070', lon:'-79.347015'}
 function formatForecastData(forecasts){
     let cols = []
     let rows = []
-    rows.push(forecasts[0])
+    
     forecasts.forEach((forecast,index) => {
-        if (forecast.dt_txt.substring(0,10) == rows[0].dt_txt.substring(0,10)){
+        const currentDate = new Date(forecast.dt * 1000).toDateString();
+
+        if(index == 0){
             rows.push(forecast)
         }else{
-            cols.push([...rows])
-            rows = [forecast]
-        }
+            
+            const firstDate = new Date(rows[0].dt * 1000).toDateString();
+            const currentDate = new Date(forecast.dt * 1000).toDateString();
 
-        if (index === forecasts.length - 1) {
-            cols.push([...rows]);
+            if (currentDate == firstDate){
+                rows.push(forecast)
+            }else{
+                cols.push([...rows])
+                rows = [forecast]
+            }
+
+            if (index === forecasts.length - 1) {
+                cols.push([...rows]);
+            }
+
         }
+        
+        
 
     });
 

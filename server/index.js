@@ -30,7 +30,7 @@ function formatForecastData(forecasts){
         }
 
     });
-    
+
     return cols
 }
 
@@ -58,8 +58,7 @@ app.get("/api/forecast", async (req, res) => {
 
     if(true){  // TODO: Intended to full from DB when time difference between API req is small
         console.log("Pulling Forecast Data From DB ...");
-        console.log(formatForecastData(fdata.list));
-        res.json(fdata)
+        res.json(formatForecastData(fdata.list))
         return
     }
 

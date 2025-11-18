@@ -252,14 +252,14 @@ export default function WeatherDashboard() {
         </div>
 
         {/* Forecast */}
-        <div className='overflow-auto p-4 border border-gray-300'>
+        <div className='overflow-auto p-4'>
         <ul className="flex flex-row mt-4 gap-4">
           {forecastData.map((forecasts,index) => (
             <li key={index} className='flex flex-col flex-shrink-0 w-full sm:w-full md:w-1/2 min-w-[350px]'>
               <div className='bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shado mb-2'>
                 <h3 className='font-bold text-xl flex justify-center'>{new Date(forecasts[0].dt * 1000).toDateString()}</h3>
               </div>
-              <div className='max-h-[700px] overflow-y-auto p-2 scroll-hidden'>
+              <div className='max-h-[700px] overflow-y-auto p-2'>
               {forecasts.map((f, index) => (
                 <div key={index} className='gap-4 mt-4 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow'>
                   <h3 className='text-grey-800 font-semibold text-lg mb-3'>{formatTime(f.dt)}</h3>

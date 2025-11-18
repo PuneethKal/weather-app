@@ -1,11 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
 
 export default function WeatherDashboard() {
 
   const [weatherData, setWeatherData] = useState("");
-  const [forecastData, setForecastData] = useState("");
+  const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const listRef = useRef(null);
+  const handleNext = () => {
+    if (listRef.current) {
+      const card = listRef.current.querySelector("li");
+      listRef.current.scrollBy({ left: card.offsetWidth + 16, behavior: "smooth" });
+    }
+  };
+
+  const handlePrev = () => {
+    if (listRef.current) {
+      const card = listRef.current.querySelector("li");
+      listRef.current.scrollBy({ left: -(card.offsetWidth + 16), behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     async function getweatherData() {
@@ -24,7 +39,7 @@ export default function WeatherDashboard() {
     }
     getweatherData();
   }, []);
-  
+
 
   const kelvinToCelsius = (k) => (k - 273.15).toFixed(1);
   const kelvinToFahrenheit = (k) => ((k - 273.15) * 9 / 5 + 32).toFixed(1);
@@ -43,21 +58,21 @@ export default function WeatherDashboard() {
     return directions[Math.round(deg / 22.5) % 16];
   };
 
-  // const getWeatherGradient = (condition) => {
-  //   const gradients = {
-  //     'Clouds': 'from-gray-400 via-gray-500 to-gray-600',
-  //     'Clear': 'from-blue-400 via-blue-500 to-blue-600',
-  //     'Rain': 'from-gray-600 via-gray-700 to-gray-800',
-  //     'Snow': 'from-blue-200 via-blue-300 to-blue-400',
-  //   };
-  //   return gradients[condition] || 'from-gray-400 via-gray-500 to-gray-600';
-  // };
+  const getWeatherGradient = (condition) => {
+    const gradients = {
+      'Clouds': 'from-gray-400 via-gray-500 to-gray-600',
+      'Clear': 'from-blue-400 via-blue-500 to-blue-600',
+      'Rain': 'from-gray-600 via-gray-700 to-gray-800',
+      'Snow': 'from-blue-200 via-blue-300 to-blue-400',
+    };
+    return gradients[condition] || 'from-gray-400 via-gray-500 to-gray-600';
+  };
 
   //TODO: Make animated loading screen
   if (loading) return <div>Loading</div>
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8`}>
+    <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8 ${getWeatherGradient(weatherData.weather.main)}`}>
       <div className="max-w-6xl mx-auto">
         {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 mb-6">
@@ -252,77 +267,86 @@ export default function WeatherDashboard() {
         </div>
 
         {/* Forecast */}
-        <div className='overflow-auto p-4'>
-        <ul className="flex flex-row mt-4 gap-4">
-          {forecastData.map((forecasts,index) => (
-            <li key={index} className='flex flex-col flex-shrink-0 w-full sm:w-full md:w-1/2 min-w-[350px]'>
-              <div className='bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shado mb-2'>
-                <h3 className='font-bold text-xl flex justify-center'>{new Date(forecasts[0].dt * 1000).toDateString()}</h3>
-              </div>
-              <div className='max-h-[700px] overflow-y-auto p-2'>
-              {forecasts.map((f, index) => (
-                <div key={index} className='gap-4 mt-4 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow'>
-                  <h3 className='text-grey-800 font-semibold text-lg mb-3'>{formatTime(f.dt)}</h3>
-                  <div className='flex flex-row justify-between w-full items-center'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <img
-                        src={`https://openweathermap.org/img/wn/${f.weather[0].icon}@2x.png`}
-                        alt="weather icon"
-                      />
-                      <div className='flex flex-col'>
-                        <div className='text-grey-800 font-semibold text-3xl'>{getTemp(f.main.temp)}°</div>
-                        <div className="text-lgtext-gray-800 mb-2 capitalize"> {f.weather[0].description}</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2 text-right">
-                      <div className="text-gray-700">
-                        <span className="text-sm">Feels like</span>
-                        <span className="text-2xl font-semibold ml-2">
-                          {getTemp(f.main.feels_like)}°
-                        </span>
-                      </div>
-                      <div className="text-gray-600 text-sm">
-                        H: {getTemp(f.main.temp_max)}° L: {getTemp(f.main.temp_min)}°
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='grid grid-cols-4 mt-5'>
-                    <div className='flex flex-row gap-2 items-center'>
-                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                      </svg>
-                      <div className='font-semibold'>{f.clouds.all}%</div>
-                    </div>
-
-                    <div className='flex flex-row gap-2 items-center'>
-                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                      <div className='font-semibold'>{f.main.humidity}%</div>
-                    </div>
-
-                    <div className='flex flex-row gap-2 items-center'>
-                      <div className='font-bold'>PoP:</div>
-                      <div className='font-semibold'>{Math.round(f.pop*100)}%</div>
-                    </div>
-
-                    <div className='flex flex-row gap-2 items-center'>
-                      <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <div className='font-semibold'>{f.main.pressure}Kpa</div>
-                    </div>
-                  </div>
+        <div className='mt-7'>
+          <button
+            onClick={handlePrev}
+            className="relative top-16 z-10 h-19 w-20 bg-transparent backdrop-blur-lg rounded-2xl p-5 hover:shadow-2xl"
+          >◀</button>
+          <button
+            onClick={handleNext}
+            className="relative top-16 z-10 h-19 w-20 bg-transparent backdrop-blur-lg rounded-2xl p-5 hover:shadow-2xl"
+          >
+            ▶
+          </button>
+          <ul ref={listRef} className="flex flex-row gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+            {forecastData.map((forecasts, index) => (
+              <li key={index} className='flex flex-col flex-shrink-0 w-full md:w-[calc((100%-1rem)/2)]'>
+                <div className='bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow mb-4'>
+                  <h3 className='font-bold text-xl flex justify-center'>{new Date(forecasts[0].dt * 1000).toDateString()}</h3>
                 </div>
-              ))}
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className=' overflow-y-auto max-h-[800px]'>
+                  {forecasts.map((f, index) => (
+                    <div key={index} className='gap-4 mt-4 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow'>
+                      <h3 className='text-grey-800 font-semibold text-lg mb-3'>{formatTime(f.dt)}</h3>
+                      <div className='flex flex-row justify-between w-full items-center'>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <img
+                            src={`https://openweathermap.org/img/wn/${f.weather[0].icon}@2x.png`}
+                            alt="weather icon"
+                          />
+                          <div className='flex flex-col'>
+                            <div className='text-grey-800 font-semibold text-3xl'>{getTemp(f.main.temp)}°</div>
+                            <div className="text-lgtext-gray-800 mb-2 capitalize"> {f.weather[0].description}</div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 text-right">
+                          <div className="text-gray-700">
+                            <span className="text-sm">Feels like</span>
+                            <span className="text-2xl font-semibold ml-2">
+                              {getTemp(f.main.feels_like)}°
+                            </span>
+                          </div>
+                          <div className="text-gray-600 text-sm">
+                            H: {getTemp(f.main.temp_max)}° L: {getTemp(f.main.temp_min)}°
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className='grid grid-cols-4 mt-5'>
+                        <div className='flex flex-row gap-2 items-center'>
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                          </svg>
+                          <div className='font-semibold'>{f.clouds.all}%</div>
+                        </div>
+
+                        <div className='flex flex-row gap-2 items-center'>
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          <div className='font-semibold'>{f.main.humidity}%</div>
+                        </div>
+
+                        <div className='flex flex-row gap-2 items-center'>
+                          <div className='font-bold'>PoP:</div>
+                          <div className='font-semibold'>{Math.round(f.pop * 100)}%</div>
+                        </div>
+
+                        <div className='flex flex-row gap-2 items-center'>
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                          <div className='font-semibold'>{f.main.pressure}Kpa</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* USES CURRENT DATE BUT DOESNT UDPATE DATA, TO BE DONE! */}
         {/* Footer Info */}
         <div className="mt-6 text-center text-black/80 text-sm">
           Last updated: {new Date(weatherData.dt * 1000).toLocaleString()}

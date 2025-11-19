@@ -11,7 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json()) // Enables reading body of req
 
-const TorontoLOC = {lat:'43.651070', lon:'-79.347015'}
+const timeOffset = 3600 //1hr time in epoch time
+let currentWeatherData = '';
+let currentForecastData = '';
 
 function formatForecastData(forecasts){
     let cols = []
@@ -37,11 +39,7 @@ function formatForecastData(forecasts){
             if (index === forecasts.length - 1) {
                 cols.push([...rows]);
             }
-
         }
-        
-        
-
     });
 
     return cols
@@ -50,38 +48,40 @@ function formatForecastData(forecasts){
 // Current weather API
 app.get("/api/weather", async (req, res) => {
 
-    if(true){  // TODO: Intended to full from DB when time difference between API req is small
-        console.log("Pulling Weather Data From DB ...");
-        res.json(wdata)
-        return
+    const currentDate = Date.now()
+    if(currentWeatherData || (currentWeatherData.dt + timeOffset > currentDate) ){  // TODO: Intended to full from DB when time difference between API req is small
+        console.log("Using Stored Weather");
+        res.json(currentWeatherData)
+    }else{
+        const lat = req.query.lat || '43.651070';
+        const lon = req.query.lon || '-79.347015';
+
+        console.log("Calling Weather API ...");
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
+        const { data } = await axios.get(url);
+        currentWeatherData = data;
+        res.json(data);
     }
-
-
-    const lat = req.query.lat || '43.651070';
-    const lon = req.query.lon || '-79.347015';
-
-    console.log("Calling Weather API ...");
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
-    const { data } = await axios.get(url);
-    res.json(data);
+    
 });
 
 // 5 day / 3 hour forecast API
 app.get("/api/forecast", async (req, res) => {
 
-    if(true){  // TODO: Intended to full from DB when time difference between API req is small
-        console.log("Pulling Forecast Data From DB ...");
-        res.json(formatForecastData(fdata.list))
-        return
+    const currentDate = Date.now()
+    if(currentForecastData || (currentForecastData.dt + timeOffset > currentDate) ){  // TODO: Intended to full from DB when time difference between API req is small
+        console.log("Using Stored Forecast");
+        res.json(currentForecastData)
+    }else{
+        const lat = req.query.lat || '43.651070';
+        const lon = req.query.lon || '-79.347015';
+
+        console.log("Calling Forecast API ...");
+        const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
+        const { data } = await axios.get(url);
+        currentForecastData = formatForecastData(data.list)
+        res.json(currentForecastData);
     }
-
-    const lat = req.query.lat || '43.651070';
-    const lon = req.query.lon || '-79.347015';
-
-    console.log("Calling Weather API ...");
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
-    const { data } = await axios.get(url);
-    res.json(data);
 });
 
 //Weather Maps (current) api

@@ -6,7 +6,8 @@ export default function WeatherDashboard() {
   const [weatherData, setWeatherData] = useState("");
   const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [LOC, setLOC] = useState('');
+
   const listRef = useRef(null);
   const handleNext = () => {
     if (listRef.current) {
@@ -22,11 +23,36 @@ export default function WeatherDashboard() {
     }
   };
 
+
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          });
+        },
+        (error) => reject(error)
+      );
+    });
+  }
+
+  function withTimeout(promise, ms) {
+    const timeout = new Promise((resolve, _) =>
+      setTimeout(() => resolve("Timed out"), ms)
+    );
+
+    return Promise.race([promise, timeout]);
+  }
+
+
   useEffect(() => {
     async function getweatherData() {
       try {
         // console.log("Calling Weather API");
-        const wdata = await axios.get('http://localhost:5000/api/weather'); // update API to use current location
+        const { lat, lon } = await withTimeout(getLocation(), 5000);
+        const wdata = await axios.get('http://localhost:5000/api/weather',{params: { 'lat':lat, 'lon':lon}}); // update API to use current location
         setWeatherData(wdata.data);
         const fdata = await axios.get('http://localhost:5000/api/forecast');
         setForecastData(fdata.data);
@@ -37,7 +63,8 @@ export default function WeatherDashboard() {
         setLoading(false)
       }
     }
-    getweatherData();
+    
+    getweatherData()
   }, []);
 
 

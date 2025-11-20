@@ -1546,6 +1546,6 @@ export const wdata = {
     },
     "timezone": -18000,
     "id": 5882873,
-    "name": "Ajax",
+    "name": "Ajaz",
     "cod": 200
 }

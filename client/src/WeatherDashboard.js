@@ -49,10 +49,11 @@ export default function WeatherDashboard() {
 
   async function getweatherData(lat, lon) {
     try {
-      const wdata = await axios.get('https://weather-app-server-phi.vercel.app/api/weather', { params: { 'lat': lat, 'lon': lon } });
+      console.log(process.env.REACT_APP_ExpressServerAPI)
+      const wdata = await axios.get(`${process.env.REACT_APP_ExpressServerAPI}/api/weather`, { params: { 'lat': lat, 'lon': lon } });
       setWeatherData(wdata.data);
       // console.log(wdata.data)
-      const fdata = await axios.get('https://weather-app-server-phi.vercel.app/api/forecast', { params: { 'lat': lat, 'lon': lon } });
+      const fdata = await axios.get(`${process.env.REACT_APP_ExpressServerAPI}/api/forecast`, { params: { 'lat': lat, 'lon': lon } });
       setForecastData(fdata.data);
       // console.log(fdata.data)
 
@@ -100,7 +101,7 @@ export default function WeatherDashboard() {
   const getWeatherGradient = (condition) => {
     const gradients = {
       'Clouds': 'from-gray-400 via-gray-500 to-gray-600',
-      'Clear': 'from-blue-400 via-blue-500 to-blue-600',
+      'Clear': 'from-blue-400 via-orange-300 to-blue-600',
       'Rain': 'from-gray-600 via-gray-700 to-gray-800',
       'Snow': 'from-blue-200 via-blue-300 to-blue-400',
     };
@@ -126,7 +127,7 @@ export default function WeatherDashboard() {
   )
 
   if (weatherData && forecastData) return (
-    <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8 ${getWeatherGradient(weatherData.weather.main)}`}>
+    <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8 ${getWeatherGradient(weatherData.weather[0].main)}`}>
       <div className="max-w-6xl mx-auto">
         {/* Header Card */}
         <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 mb-6">

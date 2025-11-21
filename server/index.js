@@ -15,19 +15,18 @@ const timeOffset = 3600 //1hr time in epoch time
 let currentWeatherData = '';
 let currentForecastData = '';
 
-function formatForecastData(forecasts) {
+function formatForecastData(forecasts, tzoffset) {
     let cols = []
     let rows = []
 
     forecasts.forEach((forecast, index) => {
-        const currentDate = new Date(forecast.dt * 1000).toDateString();
 
         if (index == 0) {
             rows.push(forecast)
         } else {
 
-            const firstDate = new Date(rows[0].dt * 1000).toDateString();
-            const currentDate = new Date(forecast.dt * 1000).toDateString();
+            const firstDate = new Date((rows[0].dt + tzoffset) * 1000).getUTCDate();
+            const currentDate = new Date((forecast.dt + tzoffset) * 1000).getUTCDate();
 
             if (currentDate == firstDate) {
                 rows.push(forecast)
@@ -45,7 +44,6 @@ function formatForecastData(forecasts) {
     return cols
 }
 
-// SOME ERROR ----
 function checkSimilar(dt,prev_lat, prev_lon, lat, lon){
     if (((dt + timeOffset)*1000 > Date.now()) && (prev_lat == Number(lat.toFixed(4)) && prev_lon== Number(lon.toFixed(4)) ) ){
         return true;
@@ -84,7 +82,7 @@ app.get("/api/forecast", async (req, res) => {
         const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
         const { data } = await axios.get(url);
         currentForecastData = data
-        currentForecastData['list'] = formatForecastData(data.list)
+        currentForecastData['list'] = formatForecastData(data.list, data.city.timezone)
         res.json(currentForecastData.list);
     }
 });

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios'
+import LocationSearch from './WeatherSearch';
 
 export default function WeatherDashboard() {
 
@@ -7,6 +8,7 @@ export default function WeatherDashboard() {
   const [forecastData, setForecastData] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [LOC, setLOC] = useState('');
 
   const listRef = useRef(null);
   const handleNext = () => {
@@ -24,7 +26,7 @@ export default function WeatherDashboard() {
   };
 
 
-  function getLocation() {
+  async function getLocation() {
     return new Promise((resolve, _) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -46,28 +48,35 @@ export default function WeatherDashboard() {
     return Promise.race([promise, timeout]);
   }
 
+  async function getweatherData(lat, lon) {
+    try {
+      const wdata = await axios.get('http://localhost:5000/api/weather', { params: { 'lat': lat, 'lon': lon } });
+      setWeatherData(wdata.data);
+      const fdata = await axios.get('http://localhost:5000/api/forecast', { params: { 'lat': lat, 'lon': lon } });
+      setForecastData(fdata.data);
+      console.log(fdata.data)
+
+    } catch(err) {
+      console.error("Error fetching weather:", err);
+      setError(true)
+    }
+
+  }
 
   useEffect(() => {
-    async function getweatherData() {
+    async function getLOCData() {
       try {
         // console.log("Calling Weather API");
         const { lat, lon } = await withTimeout(getLocation(), 5000);
-        const wdata = await axios.get('http://localhost:5000/api/weather',{params: { 'lat':lat, 'lon':lon}});
-        setWeatherData(wdata.data);
-        const fdata = await axios.get('http://localhost:5000/api/forecast',{params: { 'lat':lat, 'lon':lon}});
-        setForecastData(fdata.data);
-        console.log(fdata.data)
+        await withTimeout(getweatherData(lat,lon), 5000);
       } catch (err) {
         console.error("Error fetching weather:", err);
-        if(err !== "Timed out"){
-          setError(true)
-        }
       } finally {
         setLoading(false)
       }
     }
-    
-    getweatherData()
+
+    getLOCData()
   }, []);
 
 
@@ -105,7 +114,7 @@ export default function WeatherDashboard() {
     </div>
   )
 
-  if(error) return (
+  if (error) return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="text-center p-6 bg-white rounded-2xl shadow-md">
         <h1 className="text-2xl font-bold text-red-600 mb-2">
@@ -116,7 +125,7 @@ export default function WeatherDashboard() {
     </div>
   )
 
-  if(weatherData) return (
+  if (weatherData && forecastData) return (
     <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8 ${getWeatherGradient(weatherData.weather.main)}`}>
       <div className="max-w-6xl mx-auto">
         {/* Header Card */}
@@ -402,8 +411,15 @@ export default function WeatherDashboard() {
   );
 
 
-  return ( 
-    <div>TEST</div>
+
+  const handleLocationSelect = (data) => {
+    console.log("Selected location:", data);
+    setLOC(data);
+    getweatherData(data.lat,data.lon)
+  };
+
+  return (
+    <LocationSearch onSelect={handleLocationSelect}></LocationSearch>
   );
 
 }

@@ -8,7 +8,6 @@ export default function WeatherDashboard() {
   const [forecastData, setForecastData] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [LOC, setLOC] = useState('');
 
   const listRef = useRef(null);
   const handleNext = () => {
@@ -50,10 +49,10 @@ export default function WeatherDashboard() {
 
   async function getweatherData(lat, lon) {
     try {
-      const wdata = await axios.get('http://localhost:5000/api/weather', { params: { 'lat': lat, 'lon': lon } });
+      const wdata = await axios.get('https://weather-app-omega-five-45.vercel.app/api/weather', { params: { 'lat': lat, 'lon': lon } });
       setWeatherData(wdata.data);
       // console.log(wdata.data)
-      const fdata = await axios.get('http://localhost:5000/api/forecast', { params: { 'lat': lat, 'lon': lon } });
+      const fdata = await axios.get('https://weather-app-omega-five-45.vercel.app/api/forecast', { params: { 'lat': lat, 'lon': lon } });
       setForecastData(fdata.data);
       // console.log(fdata.data)
 
@@ -415,7 +414,6 @@ export default function WeatherDashboard() {
 
   const handleLocationSelect = (data) => {
     // console.log("Selected location:", data);
-    setLOC(data);
     getweatherData(data.lat,data.lon)
   };
 

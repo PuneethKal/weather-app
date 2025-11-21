@@ -4,9 +4,9 @@ import axios from 'axios'
 export default function WeatherDashboard() {
 
   const [weatherData, setWeatherData] = useState("");
-  const [forecastData, setForecastData] = useState([]);
+  const [forecastData, setForecastData] = useState("");
   const [loading, setLoading] = useState(true);
-  const [LOC, setLOC] = useState('');
+  const [error, setError] = useState(false);
 
   const listRef = useRef(null);
   const handleNext = () => {
@@ -25,7 +25,7 @@ export default function WeatherDashboard() {
 
 
   function getLocation() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
@@ -33,14 +33,14 @@ export default function WeatherDashboard() {
             lon: position.coords.longitude
           });
         },
-        (error) => reject(error)
+        // (error) => reject(error)
       );
     });
   }
 
   function withTimeout(promise, ms) {
-    const timeout = new Promise((resolve, _) =>
-      setTimeout(() => resolve("Timed out"), ms)
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject("Timed out"), ms)
     );
 
     return Promise.race([promise, timeout]);
@@ -52,13 +52,16 @@ export default function WeatherDashboard() {
       try {
         // console.log("Calling Weather API");
         const { lat, lon } = await withTimeout(getLocation(), 5000);
-        const wdata = await axios.get('http://localhost:5000/api/weather',{params: { 'lat':lat, 'lon':lon}}); // update API to use current location
+        const wdata = await axios.get('http://localhost:5000/api/weather',{params: { 'lat':lat, 'lon':lon}});
         setWeatherData(wdata.data);
-        const fdata = await axios.get('http://localhost:5000/api/forecast');
+        const fdata = await axios.get('http://localhost:5000/api/forecast',{params: { 'lat':lat, 'lon':lon}});
         setForecastData(fdata.data);
         console.log(fdata.data)
       } catch (err) {
         console.error("Error fetching weather:", err);
+        if(err !== "Timed out"){
+          setError(true)
+        }
       } finally {
         setLoading(false)
       }
@@ -96,9 +99,24 @@ export default function WeatherDashboard() {
   };
 
   //TODO: Make animated loading screen
-  if (loading) return <div>Loading</div>
+  if (loading) return (
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="w-32 h-32 border-8 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  )
 
-  return (
+  if(error) return (
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <div className="text-center p-6 bg-white rounded-2xl shadow-md">
+        <h1 className="text-2xl font-bold text-red-600 mb-2">
+          Currently Unavailable
+        </h1>
+        <p className="text-gray-600">Please try again later.</p>
+      </div>
+    </div>
+  )
+
+  if(weatherData) return (
     <div className={`min-h-screen bg-gradient-to-br p-4 sm:p-8 ${getWeatherGradient(weatherData.weather.main)}`}>
       <div className="max-w-6xl mx-auto">
         {/* Header Card */}
@@ -382,4 +400,11 @@ export default function WeatherDashboard() {
       </div>
     </div>
   );
+
+
+  return ( 
+    <div>TEST</div>
+  );
+
 }
+

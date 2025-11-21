@@ -3,10 +3,10 @@ import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
 
-import {fdata, wdata} from './data.js'
+import { fdata, wdata } from './data.js'
 
 
-dotenv.config({path:"../.env"});
+dotenv.config({ path: "../.env" });
 const app = express();
 app.use(cors());
 app.use(express.json()) // Enables reading body of req
@@ -15,23 +15,23 @@ const timeOffset = 3600 //1hr time in epoch time
 let currentWeatherData = '';
 let currentForecastData = '';
 
-function formatForecastData(forecasts){
+function formatForecastData(forecasts) {
     let cols = []
     let rows = []
-    
-    forecasts.forEach((forecast,index) => {
+
+    forecasts.forEach((forecast, index) => {
         const currentDate = new Date(forecast.dt * 1000).toDateString();
 
-        if(index == 0){
+        if (index == 0) {
             rows.push(forecast)
-        }else{
-            
+        } else {
+
             const firstDate = new Date(rows[0].dt * 1000).toDateString();
             const currentDate = new Date(forecast.dt * 1000).toDateString();
 
-            if (currentDate == firstDate){
+            if (currentDate == firstDate) {
                 rows.push(forecast)
-            }else{
+            } else {
                 cols.push([...rows])
                 rows = [forecast]
             }
@@ -45,48 +45,51 @@ function formatForecastData(forecasts){
     return cols
 }
 
+// SOME ERROR ----
+function checkSimilar(dt,prev_lat, prev_lon, lat, lon){
+    if (((dt + timeOffset)*1000 > Date.now()) && (prev_lat == Number(lat.toFixed(4)) && prev_lon== Number(lon.toFixed(4)) ) ){
+        return true;
+    }
+    return false;
+}
+
 // Current weather API
 app.get("/api/weather", async (req, res) => {
 
-    const currentDate = Date.now()
-    if(currentWeatherData || (currentWeatherData.dt + timeOffset > currentDate) ){  // TODO: Intended to full from DB when time difference between API req is small
+    const lat = parseFloat(req.query.lat) || '43.651070';
+    const lon = parseFloat(req.query.lon) || '-79.347015';
+    if (currentWeatherData && checkSimilar(currentWeatherData.dt,currentWeatherData.coord.lat,currentWeatherData.coord.lon,lat,lon) ) {
         console.log("Using Stored Weather");
         res.json(currentWeatherData)
-    }else{
-        const lat = req.query.lat || '43.651070';
-        const lon = req.query.lon || '-79.347015';
-
+    } else {
         console.log("Calling Weather API ...");
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
         const { data } = await axios.get(url);
         currentWeatherData = data;
         res.json(data);
     }
-    
+
 });
 
 // 5 day / 3 hour forecast API
 app.get("/api/forecast", async (req, res) => {
 
-    const currentDate = Date.now()
-    if(currentForecastData || (currentForecastData.dt + timeOffset > currentDate) ){  // TODO: Intended to full from DB when time difference between API req is small
+    const lat = parseFloat(req.query.lat) || '43.651070';
+    const lon = parseFloat(req.query.lon) || '-79.347015';
+    if (currentForecastData && checkSimilar(currentForecastData.list[0][0].dt,currentForecastData.city.coord.lat,currentForecastData.city.coord.lon,lat,lon) ) {  // TODO: Intended to full from DB when time difference between API req is small
         console.log("Using Stored Forecast");
-        res.json(currentForecastData)
-    }else{
-        const lat = req.query.lat || '43.651070';
-        const lon = req.query.lon || '-79.347015';
-
+        res.json(currentForecastData.list)
+    } else {
         console.log("Calling Forecast API ...");
         const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.OpenWeatherMapAPI}`;
         const { data } = await axios.get(url);
-        currentForecastData = formatForecastData(data.list)
-        res.json(currentForecastData);
+        currentForecastData = data
+        currentForecastData['list'] = formatForecastData(data.list)
+        res.json(currentForecastData.list);
     }
 });
 
-//Weather Maps (current) api
-
-//Air Pollution api
+//TODO: Add Weather Map API (future)
 
 
 

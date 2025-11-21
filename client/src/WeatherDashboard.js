@@ -52,6 +52,7 @@ export default function WeatherDashboard() {
     try {
       const wdata = await axios.get('http://localhost:5000/api/weather', { params: { 'lat': lat, 'lon': lon } });
       setWeatherData(wdata.data);
+      // console.log(wdata.data)
       const fdata = await axios.get('http://localhost:5000/api/forecast', { params: { 'lat': lat, 'lon': lon } });
       setForecastData(fdata.data);
       // console.log(fdata.data)

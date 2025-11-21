@@ -49,10 +49,10 @@ export default function WeatherDashboard() {
 
   async function getweatherData(lat, lon) {
     try {
-      const wdata = await axios.get('https://weather-app-omega-five-45.vercel.app/api/weather', { params: { 'lat': lat, 'lon': lon } });
+      const wdata = await axios.get('https://weather-app-server-phi.vercel.app/api/weather', { params: { 'lat': lat, 'lon': lon } });
       setWeatherData(wdata.data);
       // console.log(wdata.data)
-      const fdata = await axios.get('https://weather-app-omega-five-45.vercel.app/api/forecast', { params: { 'lat': lat, 'lon': lon } });
+      const fdata = await axios.get('https://weather-app-server-phi.vercel.app/api/forecast', { params: { 'lat': lat, 'lon': lon } });
       setForecastData(fdata.data);
       // console.log(fdata.data)
 

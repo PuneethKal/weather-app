@@ -54,7 +54,7 @@ export default function WeatherDashboard() {
       setWeatherData(wdata.data);
       const fdata = await axios.get('http://localhost:5000/api/forecast', { params: { 'lat': lat, 'lon': lon } });
       setForecastData(fdata.data);
-      console.log(fdata.data)
+      // console.log(fdata.data)
 
     } catch(err) {
       console.error("Error fetching weather:", err);
@@ -93,8 +93,8 @@ export default function WeatherDashboard() {
   };
 
   const getWindDirection = (deg) => {
-    const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-    return directions[Math.round(deg / 22.5) % 16];
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W','NW'];
+    return directions[Math.round(deg / 45) % 8];
   };
 
   const getWeatherGradient = (condition) => {
@@ -413,7 +413,7 @@ export default function WeatherDashboard() {
 
 
   const handleLocationSelect = (data) => {
-    console.log("Selected location:", data);
+    // console.log("Selected location:", data);
     setLOC(data);
     getweatherData(data.lat,data.lon)
   };
